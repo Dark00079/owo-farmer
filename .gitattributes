@@ -1,0 +1,4 @@
+# Windows batch files must keep their CRLF line endings, shell scripts their LF endings.
+# "-text" tells git never to rewrite them, so a ZIP download or a clone on any system gets them exactly as written.
+*.bat -text
+*.sh -text

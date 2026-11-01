@@ -1,0 +1,156 @@
+# ======================================================================================
+#  OwO Farmer - configuration            (copy of config.example.toml; edit config.toml)
+#  Ranges are [min, max] in seconds; the script waits a random time inside the range.
+#  Anything below OwO's real cooldown is raised automatically (you will see a warning).
+# ======================================================================================
+
+[account]
+# Name of the environment variable that holds your Discord token. Keeping the token out of
+# this file is the safest option (PowerShell:  $env:DISCORD_TOKEN = "your-token").
+token_env = "DISCORD_TOKEN"
+# Or paste it here. config.toml is git-ignored, but never share or upload this file with it filled in.
+token = ""
+
+[farm]
+# REQUIRED. Right-click the channel > Copy Channel ID (turn on Developer Mode in Discord settings).
+# A private channel that only you and OwO use works best.
+channel_id = 0
+prefix = "owo"              # "owo" or "w"
+short_commands = true       # send "h" / "b" instead of "hunt" / "battle"
+silent = true               # send as @silent messages (no notification for anyone in the channel)
+gap = [3.5, 7.0]            # pause between ANY two messages we send
+startup_delay = [3, 10]     # wait before the very first message
+reply_timeout = 25.0        # how long to wait for OwO to answer a command
+max_missed_replies = 5      # pause after this many unanswered commands in a row
+max_messages_per_minute = 12   # hard ceiling, whatever else is configured
+sync_manual_commands = true # if you type a command yourself, reset that command's timer
+extra_names = []            # other names OwO may call you by (it writes your name in its replies). Rarely needed
+trust_channel = false       # true = treat EVERY OwO message in this channel as yours (private channels only)
+
+[commands.owo]              # the plain "owo" counter message
+enabled = true
+cooldown = [10.5, 14.0]
+
+[commands.hunt]
+enabled = true
+cooldown = [15.5, 16.2]     # the "instant" case: right after OwO's own 15 s cooldown (never below 15.5)
+instant_chance = 0.35       # how often the next hunt goes out right away
+delay = [2.0, 3.0]          # the rest of the time it waits this many extra seconds first
+
+[commands.battle]           # same timing rules as hunt
+enabled = true
+cooldown = [15.5, 16.2]
+instant_chance = 0.35
+delay = [2.0, 3.0]
+
+[commands.pray]             # pray and curse share one cooldown in OwO, so they share one setting
+enabled = true
+cooldown = [305.0, 345.0]
+targets = []                # user IDs to pray for (picked at random). Empty = pray for yourself
+curse_targets = []          # user IDs to curse. If set, the script alternates pray / curse
+
+[commands.daily]            # claimed once per day; the script learns the reset time from OwO
+enabled = true
+
+[commands.cookie]
+enabled = false
+cooldown = [86400.0, 90000.0]
+target = 0                  # REQUIRED when enabled: user ID that gets your cookie
+
+[commands.sell]             # exactly what you would type after "owo sell", e.g. "common uncommon"
+enabled = false
+cooldown = [1500.0, 2100.0]
+args = ""
+
+[commands.sac]              # exactly what you would type after "owo sac"
+enabled = false
+cooldown = [1500.0, 2100.0]
+args = ""
+
+[commands.lootbox]
+enabled = false
+cooldown = [3600.0, 4200.0]
+args = "all"
+
+[commands.crate]
+enabled = false
+cooldown = [3600.0, 4200.0]
+args = "all"
+
+[commands.cash]             # balance tracking (also needed for gambling)
+enabled = true
+cooldown = [900.0, 1500.0]
+
+[gems]                      # keeps your gem types active by reading your hunts and inventory
+enabled = false
+types = ["hunting", "empowering", "lucky"]     # add "special" if you want it too
+tiers = ["common", "uncommon", "rare", "epic", "mythical", "legendary", "fabled"]
+lowest_first = true         # use the weakest allowed tier first
+check_cooldown = 90.0       # minimum seconds between inventory checks
+empty_retry_minutes = 45.0  # how long to wait before checking again when you have no gems
+
+[gamble]                    # OFF by default. The house wins on average; the limits below protect you.
+enabled = false
+game = "coinflip"           # "coinflip" or "slots"
+side = "heads"              # coinflip only: "heads", "tails" or "random"
+strategy = "flat"           # "flat" = same bet every time, "martingale" = multiply after each loss
+base_bet = 100
+multiplier = 2.0            # martingale only
+max_streak = 5              # martingale: after this many losses in a row, go back to base_bet (0 = never)
+max_bet = 5000              # no bet is ever larger than this (OwO's own cap is 250,000)
+max_balance_fraction = 0.10 # never bet more than this share of your known balance
+keep_balance = 500          # always leave at least this much cowoncy untouched
+stop_loss = 2000            # stop gambling once this much is lost this session (0 = off)
+take_profit = 5000          # stop gambling once this much is won this session (0 = off)
+daily_loss_limit = 5000     # across restarts, per calendar day (0 = off)
+max_bets = 0                # bets per session (0 = unlimited)
+cooldown = [16.0, 22.0]
+broke_pause_minutes = 30.0  # wait this long when the balance is too low or OwO says you are broke
+
+[safety]
+captcha_resume_delay = [20, 60]    # wait after OwO says you are verified before carrying on
+captcha_remind_seconds = 45.0      # repeat the alert this often until the captcha is solved
+captcha_give_up_minutes = 20.0     # exit if it still is not solved (0 = wait forever)
+slowdown_limit = 4                 # this many "slow down" warnings ...
+slowdown_window_minutes = 10.0     # ... inside this window pauses everything for a while
+slowdown_pause = [120, 300]
+quiet_hours = []                   # e.g. ["01:00-07:30", "13:00-14:00"] (your local time)
+max_runtime_minutes = 0.0          # stop after this long (0 = no limit)
+max_commands = 0                   # stop after this many messages (0 = no limit)
+break_every_minutes = 10.0         # after this much running time ...
+break_minutes = 3.0                # ... rest for this long, then carry on (set both to 0 for no breaks)
+
+[alerts]
+bell = true                        # terminal bell on captcha / ban / pause
+sound = true                       # louder beeps on Windows for captcha / ban
+webhook_url = ""                   # optional Discord webhook for captcha / ban / stop alerts
+ping_user_id = 0                   # user ID to @mention in webhook alerts (0 = nobody)
+
+[alerts.dm]                        # on a captcha, DM you from a SECOND account and keep pinging until you reply "stop"
+enabled = false
+token_env = "ALERT_ACCOUNT_TOKEN"  # environment variable holding that second account's token
+token = ""                         # or put it here (config.toml is git-ignored). Never paste it in chat or commit it
+user_id = 0                        # REQUIRED when enabled: the user ID that receives the DMs (yours)
+interval_seconds = 30.0            # time between pings (at least 15)
+max_pings = 60                     # stop pinging after this many, even without a reply
+
+[dashboard]                        # read-only stats page, served by this script while it runs
+enabled = true
+host = "127.0.0.1"                 # 127.0.0.1 = this computer only. "0.0.0.0" = reachable from other devices (needs a password)
+port = 8787
+password = ""                      # required (8+ characters) whenever host is not 127.0.0.1 / localhost
+
+[ui]
+terminal_dashboard = true          # live dashboard inside this terminal (plain log lines without rich, or with --plain)
+
+[logging]
+level = "INFO"                     # DEBUG, INFO, WARNING, ERROR
+file = "logs/farmer.log"           # relative to this config file; "" disables the file log
+
+# Your own timed commands. Copy this block as often as you like.
+# [[custom]]
+# text = "zoo"                     # sent after the prefix, e.g. "owo zoo"
+# cooldown = [600, 900]
+# enabled = true
+# prefix = true                    # false = send the text exactly as written
+# expects_reply = false            # true = OwO always answers it, so a missing answer counts as "OwO is silent"

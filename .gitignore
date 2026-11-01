@@ -1,0 +1,13 @@
+# secrets and personal data: never commit these
+config.toml
+state.json
+logs/
+.env
+token.txt
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.ruff_cache/

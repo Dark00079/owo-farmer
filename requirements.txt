@@ -1,0 +1,10 @@
+# Needs Python 3.10 or newer.
+#
+# IMPORTANT: this must be discord.py-SELF (the user-account fork), not the official discord.py.
+# Both use the import name "discord" and cannot live in the same environment, which is why
+# start.bat / start.sh install everything into their own .venv folder.
+discord.py-self>=2.1,<3
+rich>=13
+aiohttp>=3.9          # comes with discord.py-self; the web dashboard and alerts use it directly
+tomli>=2.0; python_version < "3.11"
+tzdata; sys_platform == "win32"
